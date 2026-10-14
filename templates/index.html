@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Adoção</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>Sistema de Adoção de Animais</h1>
+    <p>Encontre um novo amigo para adotar.</p>
+</header>
+<main>
+    {% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
+    <section class="animais">
+        <h2>Animais cadastrados</h2>
+        {% for animal in animais %}
+        <article class="animal-card">
+            <h3>{{ animal.nome }}</h3>
+            <p>Espécie: {{ animal.especie }}</p>
+            <p>Idade: {{ animal.idade }}</p>
+            <p>Porte: {{ animal.porte }}</p>
+            <p>Status: {{ animal.status }}</p>
+            <div class="acoes">
+            {% if animal.status == "Disponível" %}
+            <form method="POST" action="{{ url_for('adotar', indice=loop.index0) }}">
+                <button type="submit">Marcar como adotado</button>
+            </form>
+            {% endif %}
+            <form method="POST" action="{{ url_for('excluir', indice=loop.index0) }}">
+                <button type="submit" class="excluir">Excluir</button>
+            </form>
+            </div>
+            <details>
+                <summary>Editar {{ animal.nome }}</summary>
+                <form method="POST" action="{{ url_for('editar', indice=loop.index0) }}">
+                    <div class="campo">
+<label for="editar-{{ loop.index0 }}-nome">Nome:</label>
+<input id="editar-{{ loop.index0 }}-nome" name="nome" required value="{{ animal.nome }}">
+</div>
+<div class="campo">
+<label for="editar-{{ loop.index0 }}-especie">Espécie:</label>
+<input id="editar-{{ loop.index0 }}-especie" name="especie" required value="{{ animal.especie }}">
+</div>
+<div class="campo">
+<label for="editar-{{ loop.index0 }}-idade">Idade:</label>
+<input id="editar-{{ loop.index0 }}-idade" type="number" name="idade" min="0" step="1" required value="{{ animal.idade }}">
+</div>
+<div class="campo">
+<label for="editar-{{ loop.index0 }}-porte">Porte:</label>
+<select id="editar-{{ loop.index0 }}-porte" name="porte" required>
+<option {% if animal.porte == "Pequeno" %}selected{% endif %}>Pequeno</option>
+<option {% if animal.porte == "Médio" %}selected{% endif %}>Médio</option>
+<option {% if animal.porte == "Grande" %}selected{% endif %}>Grande</option>
+</select>
+</div>
+                    <button type="submit">Salvar alterações</button>
+                </form>
+            </details>
+        </article>
+        {% else %}
+        <p>Nenhum animal cadastrado ainda.</p>
+        {% endfor %}
+    </section>
+    <section class="cadastro">
+        <h2>Cadastrar animal</h2>
+        <form method="POST" action="{{ url_for('cadastro') }}">
+            <div class="campo">
+<label for="cadastro-nome">Nome:</label>
+<input id="cadastro-nome" name="nome" required >
+</div>
+<div class="campo">
+<label for="cadastro-especie">Espécie:</label>
+<input id="cadastro-especie" name="especie" required >
+</div>
+<div class="campo">
+<label for="cadastro-idade">Idade:</label>
+<input id="cadastro-idade" type="number" name="idade" min="0" step="1" required >
+</div>
+<div class="campo">
+<label for="cadastro-porte">Porte:</label>
+<select id="cadastro-porte" name="porte" required>
+<option>Pequeno</option>
+<option>Médio</option>
+<option>Grande</option>
+</select>
+</div>
+            <button type="submit">Cadastrar animal</button>
+        </form>
+    </section>
+</main>
+<footer>
+    <p>Sistema de Adoção de Animais</p>
+    <p>Etapa de estudos: os cadastros são temporários e desaparecem ao reiniciar o servidor.</p>
+</footer>
+</body>
+</html>

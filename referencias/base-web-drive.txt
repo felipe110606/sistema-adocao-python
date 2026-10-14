@@ -1,0 +1,424 @@
+﻿PROJETO 2 — SISTEMA DE ADOÇÃO DE ANIMAIS
+BASE DA VERSÃO WEB
+
+
+Objetivo
+Usar este documento como área de trabalho temporária enquanto a versão web é construída. Amanhã, o conteúdo será passado para arquivos reais no VS Code e versionado no GitHub.
+
+
+ESTRUTURA PLANEJADA
+
+
+sistema-adocao-web/
+│
+├── app.py
+├── templates/
+│   └── index.html
+├── static/
+│   └── style.css
+└── banco.db   ← entra somente na etapa de SQLite
+
+
+ETAPA ATUAL
+Começar pela interface HTML. Ainda não vamos conectar Flask nem banco de dados.
+
+
+==================================================
+index.html — base inicial
+==================================================
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Adoção</title>
+</head>
+
+
+<body>
+
+
+    <h1>Sistema de Adoção de Animais</h1>
+
+
+    <p>Encontre um novo amigo para adotar.</p>
+
+
+</body>
+
+
+</html>
+
+
+==================================================
+style.css — reservado para a próxima etapa
+==================================================
+
+
+Ainda não iniciado.
+
+
+==================================================
+app.py / Flask — reservado para depois do HTML/CSS
+==================================================
+
+
+Ainda não iniciado.
+
+
+==================================================
+Banco de dados
+==================================================
+
+
+Ainda não iniciado. Quando chegarmos nessa etapa, SQLite substituirá gradualmente a lista Python usada no protótipo de terminal.
+
+
+FLUXO DE EVOLUÇÃO
+
+
+Python terminal
+→ HTML
+→ CSS
+→ Flask
+→ SQLite
+→ Git/GitHub
+→ acabamento de portfóli
+
+
+==================================================
+ETAPA 2 — ESTRUTURA PRINCIPAL DA PÁGINA
+==================================================
+
+
+Objetivo desta etapa:
+Montar apenas a estrutura visual do sistema em HTML, sem Flask e sem banco de dados ainda.
+
+
+Substituir o conteúdo do index.html pela seguinte base quando formos para o VS Code:
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Adoção</title>
+</head>
+
+
+<body>
+
+
+    <header>
+        <h1>Sistema de Adoção de Animais</h1>
+        <p>Encontre um novo amigo para adotar.</p>
+    </header>
+
+
+    <main>
+
+
+        <section>
+            <h2>Animais disponíveis</h2>
+            <p>Nenhum animal cadastrado ainda.</p>
+        </section>
+
+
+        <section>
+            <h2>Cadastrar animal</h2>
+            <p>O formulário de cadastro será criado na próxima etapa.</p>
+        </section>
+
+
+    </main>
+
+
+    <footer>
+        <p>Sistema de Adoção de Animais</p>
+    </footer>
+
+
+</body>
+
+
+</html>
+
+
+CONCEITOS NOVOS DESTA ETAPA
+
+
+<header>
+Representa o cabeçalho da página.
+
+
+<main>
+Agrupa o conteúdo principal.
+
+
+<section>
+Divide o conteúdo em áreas com funções diferentes.
+
+
+<footer>
+Representa o rodapé da página.
+
+
+<h1> e <h2>
+Criam títulos e subtítulos.
+
+
+<p>
+Cria parágrafos.
+
+
+PRÓXIMO PASSO
+Criar o primeiro formulário HTML para cadastrar um animal com:
+- Nome
+- Espécie
+- Idade
+- Porte
+
+
+Ainda sem funcionamento em Python. Primeiro vamos aprender a estrutura do formulário no HTML.
+
+
+
+
+==================================================
+ETAPA 3 — HTML + CSS BÁSICO CONCLUÍDO
+==================================================
+
+
+Status em 12/10/2026:
+A estrutura base da página foi concluída no Colab. O projeto já possui cabeçalho, área principal, seção de animais disponíveis, formulário de cadastro, rodapé, classes CSS e estilização básica.
+
+
+index.html — estrutura atual
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Adoção</title>
+
+
+    <style>
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef;
+            color: #222222;
+            margin: 0;
+            padding: 20px;
+        }
+
+
+        h1 {
+            color: #000000;
+        }
+
+
+        h2 {
+            color: #1a1a1a;
+        }
+
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+
+        main {
+            max-width: 700px;
+            margin: auto;
+        }
+
+
+        section {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+
+        .animais {
+            border-left: 5px solid #555555;
+        }
+
+
+        .cadastro {
+            border-left: 5px solid #222222;
+        }
+
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+
+        .campo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            background-color: #ffffff;
+            color: #222222;
+            border: 1px solid #999999;
+            border-radius: 5px;
+        }
+
+
+        button {
+            background-color: #333333;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+    <header>
+        <h1>Sistema de Adoção de Animais</h1>
+        <p>Encontre um novo amigo para adotar.</p>
+    </header>
+
+
+    <main>
+
+
+        <section class="animais">
+            <h2>Animais disponíveis</h2>
+            <p>Nenhum animal cadastrado ainda.</p>
+        </section>
+
+
+        <section class="cadastro">
+            <h2>Cadastrar animal</h2>
+
+
+            <form>
+
+
+                <div class="campo">
+                    <label>Nome:</label>
+                    <input type="text" name="nome">
+                </div>
+
+
+                <div class="campo">
+                    <label>Espécie:</label>
+                    <input type="text" name="especie">
+                </div>
+
+
+                <div class="campo">
+                    <label>Idade:</label>
+                    <input type="number" name="idade">
+                </div>
+
+
+                <div class="campo">
+                    <label>Porte:</label>
+
+
+                    <select name="porte">
+                        <option>Pequeno</option>
+                        <option>Médio</option>
+                        <option>Grande</option>
+                    </select>
+                </div>
+
+
+                <button type="submit">
+                    Cadastrar animal
+                </button>
+
+
+            </form>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer>
+        <p>Sistema de Adoção de Animais</p>
+    </footer>
+
+
+</body>
+
+
+</html>
+
+
+CONCEITOS PRATICADOS NESTA ETAPA
+
+
+HTML:
+- html, head e body
+- header, main, section e footer
+- h1, h2 e p
+- form, label, input, select, option e button
+- div e class
+
+
+CSS:
+- seletores por tag e por classe
+- cor e cor de fundo
+- margin e padding
+- border e border-radius
+- box-shadow
+- width e max-width
+- display
+- font-weight
+- box-sizing
+- cursor
+
+
+PRÓXIMA ETAPA
+
+
+Flask: conectar a interface HTML ao Python para que o formulário de cadastro envie os dados e o sistema passe a funcionar pela web.
+
+
+Banco de dados SQLite continua reservado para uma etapa posterior.

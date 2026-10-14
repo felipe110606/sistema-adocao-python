@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+    color: #222222;
+    margin: 0;
+    padding: 20px;
+}
+
+
+h1 {
+    color: #000000;
+}
+
+
+h2 {
+    color: #1a1a1a;
+}
+
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+main {
+    max-width: 700px;
+    margin: auto;
+}
+
+
+section {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+.animais {
+    border-left: 5px solid #555555;
+}
+
+
+.cadastro {
+    border-left: 5px solid #222222;
+}
+
+
+.campo {
+    margin-bottom: 15px;
+}
+
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+
+.campo input,
+.campo select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    background-color: #ffffff;
+    color: #222222;
+    border: 1px solid #999999;
+    border-radius: 5px;
+}
+
+
+button {
+    background-color: #333333;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+.animal-card { border-bottom: 1px solid #ddd; padding: 16px 0; }
+.acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.excluir { background-color: #9b2c2c; }
+details { margin-top: 12px; }
+summary { cursor: pointer; margin-bottom: 12px; }
+.erro { color: #9b2c2c; background: #fff; padding: 16px; }
