@@ -24,32 +24,32 @@
             <p>Status: {{ animal.status }}</p>
             <div class="acoes">
             {% if animal.status == "Disponível" %}
-            <form method="POST" action="{{ url_for('adotar', indice=loop.index0) }}">
+            <form method="POST" action="{{ url_for('adotar', animal_id=animal.id) }}">
                 <button type="submit">Marcar como adotado</button>
             </form>
             {% endif %}
-            <form method="POST" action="{{ url_for('excluir', indice=loop.index0) }}">
+            <form method="POST" action="{{ url_for('excluir', animal_id=animal.id) }}">
                 <button type="submit" class="excluir">Excluir</button>
             </form>
             </div>
             <details>
                 <summary>Editar {{ animal.nome }}</summary>
-                <form method="POST" action="{{ url_for('editar', indice=loop.index0) }}">
+                <form method="POST" action="{{ url_for('editar', animal_id=animal.id) }}">
                     <div class="campo">
-<label for="editar-{{ loop.index0 }}-nome">Nome:</label>
-<input id="editar-{{ loop.index0 }}-nome" name="nome" required value="{{ animal.nome }}">
+<label for="editar-{{ animal.id }}-nome">Nome:</label>
+<input id="editar-{{ animal.id }}-nome" name="nome" required value="{{ animal.nome }}">
 </div>
 <div class="campo">
-<label for="editar-{{ loop.index0 }}-especie">Espécie:</label>
-<input id="editar-{{ loop.index0 }}-especie" name="especie" required value="{{ animal.especie }}">
+<label for="editar-{{ animal.id }}-especie">Espécie:</label>
+<input id="editar-{{ animal.id }}-especie" name="especie" required value="{{ animal.especie }}">
 </div>
 <div class="campo">
-<label for="editar-{{ loop.index0 }}-idade">Idade:</label>
-<input id="editar-{{ loop.index0 }}-idade" type="number" name="idade" min="0" step="1" required value="{{ animal.idade }}">
+<label for="editar-{{ animal.id }}-idade">Idade:</label>
+<input id="editar-{{ animal.id }}-idade" type="number" name="idade" min="0" step="1" required value="{{ animal.idade }}">
 </div>
 <div class="campo">
-<label for="editar-{{ loop.index0 }}-porte">Porte:</label>
-<select id="editar-{{ loop.index0 }}-porte" name="porte" required>
+<label for="editar-{{ animal.id }}-porte">Porte:</label>
+<select id="editar-{{ animal.id }}-porte" name="porte" required>
 <option {% if animal.porte == "Pequeno" %}selected{% endif %}>Pequeno</option>
 <option {% if animal.porte == "Médio" %}selected{% endif %}>Médio</option>
 <option {% if animal.porte == "Grande" %}selected{% endif %}>Grande</option>
@@ -92,7 +92,7 @@
 </main>
 <footer>
     <p>Sistema de Adoção de Animais</p>
-    <p>Etapa de estudos: os cadastros são temporários e desaparecem ao reiniciar o servidor.</p>
+    <p>Os cadastros são salvos no banco SQLite local.</p>
 </footer>
 </body>
 </html>

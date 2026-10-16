@@ -8,3 +8,6 @@ O arquivo adocao.db fica ao lado do código. Cada operação abre/fecha a conex�
 O ID substitui a busca por nome nas ações: dois animais podem ter o mesmo nome.
 Validação: CRUD e reabertura do banco em arquivo temporário; código de terminal preservado.
 
+
+## Etapa 2 — Flask, formulário e Jinja
+A lista em memória foi substituída pelas funções de banco.py. URLs e campos de edição usam animal.id. IDs inexistentes retornam 404. O site mantém os dados entre execuções.
