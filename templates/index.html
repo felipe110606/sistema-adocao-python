@@ -1,98 +1,515 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Adoção</title>
+    <title>Sistema de Adoção de Animais</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-<header>
-    <h1>Sistema de Adoção de Animais</h1>
-    <p>Encontre um novo amigo para adotar.</p>
-</header>
-<main>
-    {% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
-    <section class="animais">
-        <h2>Animais cadastrados</h2>
-        {% for animal in animais %}
-        <article class="animal-card">
-            <h3>{{ animal.nome }}</h3>
-            <p>Espécie: {{ animal.especie }}</p>
-            <p>Idade: {{ animal.idade }}</p>
-            <p>Porte: {{ animal.porte }}</p>
-            <p>Status: {{ animal.status }}</p>
-            <div class="acoes">
-            {% if animal.status == "Disponível" %}
-            <form method="POST" action="{{ url_for('adotar', animal_id=animal.id) }}">
-                <button type="submit">Marcar como adotado</button>
-            </form>
-            {% endif %}
-            <form method="POST" action="{{ url_for('excluir', animal_id=animal.id) }}">
-                <button type="submit" class="excluir">Excluir</button>
-            </form>
+
+    <header class="hero-header">
+        <div class="hero-grid">
+
+            <div class="hero-texto">
+                <span class="hero-tag">Adoção responsável</span>
+
+                <h1>Sistema de Adoção de Animais</h1>
+
+                <p>
+                    Encontre um novo amigo para adotar e ajude a conectar
+                    animais a lares cheios de carinho.
+                </p>
+
+                <div class="hero-botoes">
+                    <a href="{{ '#cadastro' if pode_gerenciar else url_for('entrar', destino='cadastro') }}" class="hero-botao hero-botao-principal">Cadastrar animal</a>
+
+                    <a href="#lista" class="hero-botao hero-botao-secundario">
+                        Ver animais
+                    </a>
+                </div>
             </div>
-            <details>
-                <summary>Editar {{ animal.nome }}</summary>
-                <form method="POST" action="{{ url_for('editar', animal_id=animal.id) }}">
-                    <div class="campo">
-<label for="editar-{{ animal.id }}-nome">Nome:</label>
-<input id="editar-{{ animal.id }}-nome" name="nome" required value="{{ animal.nome }}">
-</div>
-<div class="campo">
-<label for="editar-{{ animal.id }}-especie">Espécie:</label>
-<input id="editar-{{ animal.id }}-especie" name="especie" required value="{{ animal.especie }}">
-</div>
-<div class="campo">
-<label for="editar-{{ animal.id }}-idade">Idade:</label>
-<input id="editar-{{ animal.id }}-idade" type="number" name="idade" min="0" step="1" required value="{{ animal.idade }}">
-</div>
-<div class="campo">
-<label for="editar-{{ animal.id }}-porte">Porte:</label>
-<select id="editar-{{ animal.id }}-porte" name="porte" required>
-<option {% if animal.porte == "Pequeno" %}selected{% endif %}>Pequeno</option>
-<option {% if animal.porte == "Médio" %}selected{% endif %}>Médio</option>
-<option {% if animal.porte == "Grande" %}selected{% endif %}>Grande</option>
-</select>
-</div>
-                    <button type="submit">Salvar alterações</button>
-                </form>
-            </details>
-        </article>
-        {% else %}
-        <p>Nenhum animal cadastrado ainda.</p>
-        {% endfor %}
-    </section>
-    <section class="cadastro">
-        <h2>Cadastrar animal</h2>
-        <form method="POST" action="{{ url_for('cadastro') }}">
-            <div class="campo">
-<label for="cadastro-nome">Nome:</label>
-<input id="cadastro-nome" name="nome" required >
-</div>
-<div class="campo">
-<label for="cadastro-especie">Espécie:</label>
-<input id="cadastro-especie" name="especie" required >
-</div>
-<div class="campo">
-<label for="cadastro-idade">Idade:</label>
-<input id="cadastro-idade" type="number" name="idade" min="0" step="1" required >
-</div>
-<div class="campo">
-<label for="cadastro-porte">Porte:</label>
-<select id="cadastro-porte" name="porte" required>
-<option>Pequeno</option>
-<option>Médio</option>
-<option>Grande</option>
-</select>
-</div>
-            <button type="submit">Cadastrar animal</button>
-        </form>
-    </section>
-</main>
-<footer>
-    <p>Sistema de Adoção de Animais</p>
-    <p>Os cadastros são salvos no banco SQLite local.</p>
-</footer>
+
+            <div class="hero-imagem-card">
+                <img decoding="async"
+                    src="{{ url_for('static', filename='images/hero-adocao.png') }}"
+                    alt="Pessoa interagindo com um animal em ambiente de adoção"
+                >
+            </div>
+
+        </div>
+    </header>
+
+    <main>
+
+        {% set filtros = filtros|default({}) %}
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                <div class="mensagens">
+                    {% for categoria, mensagem in mensagens %}
+                        <p class="mensagem mensagem-{{ categoria }}" role="status">
+                            ✓ {{ mensagem }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if erro %}
+            <p class="erro" role="alert">
+                {{ erro }}
+            </p>
+        {% endif %}
+
+        <section class="galeria-destaque">
+            <div class="titulo-secao">
+                <div>
+                    <span class="secao-subtitulo">Momentos especiais</span>
+                    <h2>Conexões que transformam vidas</h2>
+                </div>
+            </div>
+
+            <div class="grid-galeria">
+                <article class="card-galeria">
+                    <img decoding="async"
+                        src="{{ url_for('static', filename='images/galeria-1.png') }}"
+                        loading="lazy" alt="Pessoa brincando com cachorro"
+                    >
+                    <div class="card-galeria-texto">
+                        <h3>Carinho e confiança</h3>
+                        <p>Animais e humanos criando laços reais através da adoção.</p>
+                    </div>
+                </article>
+
+                <article class="card-galeria">
+                    <img decoding="async"
+                        src="{{ url_for('static', filename='images/galeria-2.png') }}"
+                        loading="lazy" alt="Pessoa interagindo com gato"
+                    >
+                    <div class="card-galeria-texto">
+                        <h3>Novos começos</h3>
+                        <p>Cada adoção representa uma nova chance para um animal.</p>
+                    </div>
+                </article>
+
+                <article class="card-galeria">
+                    <img decoding="async"
+                        src="{{ url_for('static', filename='images/galeria-3.png') }}"
+                        loading="lazy" alt="Animal brincando com pessoa"
+                    >
+                    <div class="card-galeria-texto">
+                        <h3>Mais alegria</h3>
+                        <p>Pets trazem companhia, afeto e momentos inesquecíveis.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="filtros">
+            <div class="titulo-secao">
+                <div>
+                    <span class="secao-subtitulo">Pesquisa</span>
+                    <h2>Buscar animais</h2>
+                </div>
+            </div>
+
+            <form method="GET" action="{{ url_for('inicio') }}" class="form-filtros">
+
+                <div class="campo campo-busca">
+                    <label for="busca">Buscar</label>
+                    <input
+                        id="busca"
+                        type="text"
+                        name="busca"
+                        placeholder="Nome ou espécie..."
+                        value="{{ filtros.get('busca', '') }}"
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="especie">Espécie</label>
+                    <input
+                        id="especie"
+                        type="text"
+                        name="especie"
+                        placeholder="Ex.: Gato"
+                        value="{{ filtros.get('especie', '') }}"
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="porte">Porte</label>
+                    <select id="porte" name="porte">
+                        <option value="">Todos</option>
+                        <option value="Pequeno" {% if filtros.get('porte') == 'Pequeno' %}selected{% endif %}>Pequeno</option>
+                        <option value="Médio" {% if filtros.get('porte') == 'Médio' %}selected{% endif %}>Médio</option>
+                        <option value="Grande" {% if filtros.get('porte') == 'Grande' %}selected{% endif %}>Grande</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="">Todos</option>
+                        <option value="Disponível" {% if filtros.get('status') == 'Disponível' %}selected{% endif %}>Disponível</option>
+                        <option value="Adotado" {% if filtros.get('status') == 'Adotado' %}selected{% endif %}>Adotado</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="ordenar">Ordenar</label>
+                    <select id="ordenar" name="ordenar">
+                        <option value="id" {% if filtros.get('ordenar', 'id') == 'id' %}selected{% endif %}>Mais antigos</option>
+                        <option value="nome" {% if filtros.get('ordenar') == 'nome' %}selected{% endif %}>Nome</option>
+                        <option value="idade" {% if filtros.get('ordenar') == 'idade' %}selected{% endif %}>Menor idade</option>
+                        <option value="idade_desc" {% if filtros.get('ordenar') == 'idade_desc' %}selected{% endif %}>Maior idade</option>
+                    </select>
+                </div>
+
+                <div class="acoes-filtros">
+                    <button type="submit" class="botao-filtrar">Buscar</button>
+                    <a href="{{ url_for('inicio') }}" class="botao-limpar">Limpar filtros</a>
+                </div>
+
+            </form>
+        </section>
+
+        <section class="animais" id="lista">
+            <div class="titulo-secao">
+                <div>
+                    <span class="secao-subtitulo">Adoção responsável</span>
+                    <h2>Animais cadastrados</h2>
+                </div>
+            </div>
+
+            <div class="lista-animais">
+                {% for animal in animais %}
+                    <article class="animal-card">
+                        {% if animal.foto %}
+                        <img class="foto-animal" src="{{ url_for('foto_animal', nome=animal.foto) }}" alt="Foto de {{ animal.nome }}" loading="lazy">
+                        {% else %}
+                        <div class="foto-ausente">Foto do animal ainda não adicionada</div>
+                        {% endif %}
+
+                        <div class="animal-topo">
+                            <div>
+                                <h3>{{ animal.nome }}</h3>
+                                <span class="especie">{{ animal.especie }}</span>
+                            </div>
+
+                            <span class="status {% if animal.status == 'Disponível' %}status-disponivel{% else %}status-adotado{% endif %}">
+                                {{ animal.status }}
+                            </span>
+                        </div>
+
+                        <div class="animal-info">
+                            <div class="info-item">
+                                <span class="info-titulo">Idade</span>
+                                <strong>
+                                    {{ animal.idade }}
+                                    {% if animal.idade == 1 %}ano{% else %}anos{% endif %}
+                                </strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-titulo">Porte</span>
+                                <strong>{{ animal.porte }}</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-titulo">Espécie</span>
+                                <strong>{{ animal.especie }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="local-animal"><span class="info-titulo">Localização</span><strong>{{ animal.localizacao or 'Não informada' }}</strong></div>
+                        <div class="contato-doador">
+                            <h4>Informações do doador</h4>
+                            <div><span class="info-titulo">Nome</span><strong>{{ animal.doador_nome or 'Não informado' }}</strong></div>
+                            <div><span class="info-titulo">Telefone</span><strong>{{ animal.doador_telefone or 'Não informado' }}</strong></div>
+                        </div>
+                        {% if pode_gerenciar %}
+                        <div class="acoes">
+                            {% if animal.status == "Disponível" %}
+                                <form method="POST" action="{{ url_for('adotar', animal_id=animal.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="adotar">Marcar como adotado</button>
+                                </form>
+                            {% endif %}
+
+                            <form
+                                id="form-excluir-{{ animal.id }}"
+                                method="POST"
+                                action="{{ url_for('excluir', animal_id=animal.id) }}"
+                            >
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button
+                                    type="button"
+                                    class="excluir abrir-modal-excluir"
+                                    data-form-id="form-excluir-{{ animal.id }}"
+                                    data-animal-nome="{{ animal.nome }}"
+                                >
+                                    Excluir
+                                </button>
+                            </form>
+                        </div>
+
+                        <details>
+                            <summary>Editar {{ animal.nome }}</summary>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('editar', animal_id=animal.id) }}"
+                                class="form-edicao" enctype="multipart/form-data"
+                            >
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="campo">
+                                    <label for="editar-{{ animal.id }}-nome">Nome:</label>
+                                    <input
+                                        id="editar-{{ animal.id }}-nome"
+                                        name="nome"
+                                        type="text"
+                                        value="{{ animal.nome }}"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="campo">
+                                    <label for="editar-{{ animal.id }}-especie">Espécie:</label>
+                                    <input
+                                        id="editar-{{ animal.id }}-especie"
+                                        name="especie"
+                                        type="text"
+                                        value="{{ animal.especie }}"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="campo">
+                                    <label for="editar-{{ animal.id }}-idade">Idade:</label>
+                                    <input
+                                        id="editar-{{ animal.id }}-idade"
+                                        type="number"
+                                        name="idade"
+                                        min="0"
+                                        step="1"
+                                        value="{{ animal.idade }}"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="campo">
+                                    <label for="editar-{{ animal.id }}-porte">Porte:</label>
+                                    <select
+                                        id="editar-{{ animal.id }}-porte"
+                                        name="porte"
+                                        required
+                                    >
+                                        <option value="Pequeno" {% if animal.porte == "Pequeno" %}selected{% endif %}>Pequeno</option>
+                                        <option value="Médio" {% if animal.porte == "Médio" %}selected{% endif %}>Médio</option>
+                                        <option value="Grande" {% if animal.porte == "Grande" %}selected{% endif %}>Grande</option>
+                                    </select>
+                                </div>
+
+                                <fieldset class="dados-extras"><legend>Localização e contato do doador</legend>
+<div class="campo"><label for="editar-{{ animal.id }}-localizacao">Localização do animal</label><input id="editar-{{ animal.id }}-localizacao" name="localizacao" type="text" maxlength="160" placeholder="Cidade / UF e bairro" value="{{ animal.localizacao }}"></div>
+<div class="campo"><label for="editar-{{ animal.id }}-doador_nome">Nome do doador</label><input id="editar-{{ animal.id }}-doador_nome" name="doador_nome" type="text" maxlength="120" placeholder="Nome de quem está doando" value="{{ animal.doador_nome }}"></div>
+<div class="campo"><label for="editar-{{ animal.id }}-doador_telefone">Telefone do doador</label><input id="editar-{{ animal.id }}-doador_telefone" name="doador_telefone" type="tel" maxlength="40" placeholder="(11) 99999-9999" value="{{ animal.doador_telefone }}"></div>
+<div class="campo"><label for="editar-{{ animal.id }}-foto">Trocar foto do animal</label><input id="editar-{{ animal.id }}-foto" type="file" name="foto" accept="image/jpeg,image/png,image/webp" aria-describedby="editar-{{ animal.id }}-foto-ajuda"><small id="editar-{{ animal.id }}-foto-ajuda">JPG, PNG ou WebP, até 5 MB. Deixe vazio para manter a foto atual.</small></div></fieldset>
+<button type="submit" class="botao-salvar">
+                                    Salvar alterações
+                                </button>
+                            </form>
+                        </details>
+                        {% endif %}
+
+                    </article>
+                {% else %}
+                    <div class="estado-vazio">
+                        <svg class="icone-patinha" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true" focusable="false">
+                            <ellipse cx="13" cy="25" rx="7" ry="10" transform="rotate(-25 13 25)"/>
+                            <ellipse cx="26" cy="16" rx="7" ry="10" transform="rotate(-8 26 16)"/>
+                            <ellipse cx="42" cy="17" rx="7" ry="10" transform="rotate(12 42 17)"/>
+                            <ellipse cx="53" cy="29" rx="7" ry="10" transform="rotate(28 53 29)"/>
+                            <path d="M32 31c-7 0-10 6-15 12-7 9-2 17 6 15l9-3 9 3c9 2 14-6 7-15-5-6-9-12-16-12Z"/>
+                        </svg>
+                        {% if filtros.get('busca') or filtros.get('especie') or filtros.get('porte') or filtros.get('status') %}
+                            <h3>Nenhum animal encontrado</h3>
+                            <p>Não encontramos animais com esses filtros. Tente uma nova busca.</p>
+                            <a href="{{ url_for('inicio') }}#lista" class="botao-limpar">Limpar filtros</a>
+                        {% else %}
+                            <h3>Uma nova história começa aqui</h3>
+                            <p>Ainda não há animais cadastrados. Dê o primeiro passo para conectar um animal a um novo lar.</p>
+                            <a href="{{ '#cadastro' if pode_gerenciar else url_for('entrar', destino='cadastro') }}" class="hero-botao hero-botao-principal">Cadastrar primeiro animal</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if pode_gerenciar %}
+        <section class="cadastro" id="cadastro">
+            <div class="titulo-secao">
+                <div>
+                    <span class="secao-subtitulo">Novo cadastro</span>
+                    <h2>Cadastrar animal</h2>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('cadastro') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="campo">
+                    <label for="cadastro-nome">Nome:</label>
+                    <input
+                        id="cadastro-nome"
+                        name="nome"
+                        type="text"
+                        placeholder="Ex.: Luna"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="cadastro-especie">Espécie:</label>
+                    <input
+                        id="cadastro-especie"
+                        name="especie"
+                        type="text"
+                        placeholder="Ex.: Gato"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="cadastro-idade">Idade:</label>
+                    <input
+                        id="cadastro-idade"
+                        type="number"
+                        name="idade"
+                        min="0"
+                        step="1"
+                        placeholder="Ex.: 2"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="cadastro-porte">Porte:</label>
+                    <select id="cadastro-porte" name="porte" required>
+                        <option value="Pequeno">Pequeno</option>
+                        <option value="Médio">Médio</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                </div>
+
+                <fieldset class="dados-extras"><legend>Localização e contato do doador</legend>
+<div class="campo"><label for="cadastro-localizacao">Localização do animal</label><input id="cadastro-localizacao" name="localizacao" type="text" maxlength="160" placeholder="Cidade / UF e bairro"></div>
+<div class="campo"><label for="cadastro-doador_nome">Nome do doador</label><input id="cadastro-doador_nome" name="doador_nome" type="text" maxlength="120" placeholder="Nome de quem está doando"></div>
+<div class="campo"><label for="cadastro-doador_telefone">Telefone do doador</label><input id="cadastro-doador_telefone" name="doador_telefone" type="tel" maxlength="40" placeholder="(11) 99999-9999"></div>
+<div class="campo"><label for="cadastro-foto">Foto do animal</label><input id="cadastro-foto" type="file" name="foto" accept="image/jpeg,image/png,image/webp" aria-describedby="cadastro-foto-ajuda"><small id="cadastro-foto-ajuda">JPG, PNG ou WebP, até 5 MB. Você pode adicionar a foto depois.</small></div></fieldset>
+<button type="submit" class="botao-cadastrar">
+                    Cadastrar animal
+                </button>
+
+            </form>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>Sistema de Adoção de Animais</p>
+        <p class="footer-secundario">Desenvolvido com Python, Flask e SQLite.</p>
+        {% if modo_publico %}
+            {% if pode_gerenciar %}
+                <form method="POST" action="{{ url_for('sair') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sair da administração</button></form>
+            {% else %}
+                <a href="{{ url_for('entrar') }}">Área administrativa</a>
+            {% endif %}
+        {% endif %}
+    </footer>
+
+    <!-- MODAL DE EXCLUSÃO -->
+    <dialog id="modal-excluir" class="modal-excluir" aria-labelledby="titulo-modal-excluir" aria-describedby="aviso-modal-excluir">
+        <div class="modal-conteudo">
+            <div class="modal-icone">⚠️</div>
+
+            <h3 id="titulo-modal-excluir">Excluir animal?</h3>
+
+            <p>
+                Tem certeza que deseja excluir
+                <strong id="nome-animal-modal">este animal</strong>?
+            </p>
+
+            <p class="modal-aviso" id="aviso-modal-excluir">
+                Essa ação não poderá ser desfeita.
+            </p>
+
+            <div class="modal-botoes">
+                <button type="button" class="modal-cancelar" id="cancelar-exclusao" autofocus>
+                    Cancelar
+                </button>
+
+                <button type="button" class="modal-confirmar" id="confirmar-exclusao">
+                    Excluir animal
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        const modalExcluir = document.getElementById("modal-excluir");
+        const nomeAnimalModal = document.getElementById("nome-animal-modal");
+        const cancelarExclusao = document.getElementById("cancelar-exclusao");
+        const confirmarExclusao = document.getElementById("confirmar-exclusao");
+        const botoesExcluir = document.querySelectorAll(".abrir-modal-excluir");
+
+        let formularioAlvo = null;
+
+        botoesExcluir.forEach((botao) => {
+            botao.addEventListener("click", () => {
+                const nomeAnimal = botao.dataset.animalNome;
+                const formId = botao.dataset.formId;
+
+                formularioAlvo = document.getElementById(formId);
+                nomeAnimalModal.textContent = nomeAnimal;
+
+                confirmarExclusao.disabled = false;
+                modalExcluir.showModal();
+            });
+        });
+
+        cancelarExclusao.addEventListener("click", () => {
+            modalExcluir.close();
+            formularioAlvo = null;
+        });
+
+        confirmarExclusao.addEventListener("click", () => {
+            if (formularioAlvo) {
+                confirmarExclusao.disabled = true;
+                formularioAlvo.requestSubmit();
+            }
+        });
+
+        modalExcluir.addEventListener("click", (event) => {
+            const rect = modalExcluir.getBoundingClientRect();
+
+            const clicouDentro =
+                event.clientX >= rect.left &&
+                event.clientX <= rect.right &&
+                event.clientY >= rect.top &&
+                event.clientY <= rect.bottom;
+
+            if (!clicouDentro) {
+                modalExcluir.close();
+                formularioAlvo = null;
+            }
+        });
+    </script>
+
 </body>
 </html>

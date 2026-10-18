@@ -1,54 +1,110 @@
-# Sistema de Adoção de Animais
+# Sistema de Adoção de Animais 🐾
 
-Projeto 2 dos estudos de Python do Felipe: terminal → HTML/CSS → Flask/Jinja → SQLite.
+Aplicação web em **Python, Flask e SQLite** para conectar animais a novos lares. Inclui cadastro de animais, informações do doador, localização, fotos e uma área administrativa protegida.
+
+**[Acessar o site](https://felipegab11.pythonanywhere.com/)** · **[Área administrativa](https://felipegab11.pythonanywhere.com/entrar)**
+
+Projeto de portfólio desenvolvido por **Felipe**, evoluindo de um programa de terminal para uma aplicação web publicada. **Versão 1.0.0.**
+
+## Prévia
+
+![Página inicial do Sistema de Adoção](docs/screenshots/inicio.png)
+
+<details>
+<summary>Ver pesquisa e cadastro</summary>
+
+![Pesquisa e estado sem cadastros](docs/screenshots/pesquisa.png)
+
+![Formulário de cadastro com contato, localização e foto](docs/screenshots/cadastro.png)
+
+</details>
+
+As capturas mostram a interface do projeto. As imagens de apresentação foram geradas por IA e não representam os animais cadastrados.
 
 ## Funcionalidades
-Cadastro, listagem, edição, adoção e exclusão por ID, com validação no servidor e persistência após reiniciar a aplicação.
 
-## Executar no Windows / VS Code
-Abra esta pasta e use o terminal:
+- Cadastro, listagem, edição, adoção e exclusão de animais por ID.
+- Busca por nome ou espécie; filtros por espécie, porte e status.
+- Ordenação por cadastro, nome e idade.
+- Nome e telefone do doador, localização do animal e foto em cada cadastro.
+- Envio de fotos JPG, PNG ou WebP de até 5 MB, com validação e armazenamento local no servidor.
+- Persistência em SQLite e atualização automática das colunas dos cadastros antigos.
+- Mensagens de sucesso, erros de validação e confirmação de exclusão em modal.
+- Interface responsiva em branco suave e verde água.
+- Na versão pública, consulta aberta e alterações restritas ao administrador.
+- Login com senha armazenada por hash, sessão com expiração, proteção CSRF e limite de tentativas.
+
+## Tecnologias
+
+| Camada | Tecnologias |
+| --- | --- |
+| Aplicação | Python, Flask e Jinja |
+| Dados | SQLite e `sqlite3` |
+| Interface | HTML5, CSS3 e JavaScript |
+| Imagens | Pillow |
+| Testes | `unittest`, cliente de testes do Flask e bancos temporários |
+| Hospedagem | PythonAnywhere, com entrada WSGI |
+
+## Executar localmente
+
+Recomendado: **Python 3.13**, usado na hospedagem. O projeto também foi testado localmente em Python 3.14.
+
 ```powershell
+git clone https://github.com/felipe110606/sistema-adocao-python.git
+cd sistema-adocao-python
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe app.py
 ```
-Se .venv já existe, pule sua criação. Abra http://127.0.0.1:5000/.
-Ctrl+C encerra o servidor; execute novamente o último comando para reiniciar.
 
-A tabela é criada automaticamente. adocao.db fica ao lado de banco.py, independentemente do diretório do terminal. Um clone novo começa vazio.
+No macOS ou Linux, use `python3 -m venv .venv` e substitua `.\.venv\Scripts\python.exe` por `.venv/bin/python` nos comandos seguintes.
 
-## Arquivos
-- app.py: rotas Flask e formulários.
-- banco.py: conexão, tabela e CRUD SQL.
-- sistema_adocao.py: terminal original preservado.
-- templates/index.html: Jinja com animal.id.
-- static/style.css: estilos.
-- tests/test_sqlite.py: testes com banco temporário isolado.
-- ETAPAS.md: registro de cada etapa.
-- referencias/: material histórico.
-- requirements.txt: Flask.
+Abra **http://127.0.0.1:5000/**. O banco é criado automaticamente, e um clone novo começa sem cadastros. Encerre com `Ctrl+C`.
 
-## Fluxo
-Formulário → POST → validação → INSERT/UPDATE/DELETE → redirect → SELECT → Jinja.
-As ações usam o ID: nomes podem se repetir. Excluir um animal não muda o ID dos demais.
-A edição valida todos os campos antes de alterar e preserva o status.
-ID inexistente retorna 404. Cada operação abre/fecha sua conexão, usa parâmetros ? e transações.
-CREATE TABLE IF NOT EXISTS conserva dados; não migra automaticamente esquemas antigos.
+O modo local permite gerenciar os animais diretamente e usa o servidor de desenvolvimento. Para a versão pública, use a configuração WSGI e o login administrativo descritos em [PUBLICAR.md](PUBLICAR.md).
 
-## Testar
+## Testes
+
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
-Testa CRUD, validações, IDs, nomes repetidos, HTML escapado e persistência numa nova aplicação e em outro processo Python. Os testes não usam seu banco de cadastros.
 
-## Dados e backup
-adocao.db e arquivos auxiliares ficam fora do Git. GitHub guarda o código e não faz backup dos cadastros.
-Para copiar o banco, encerre o servidor e guarde uma cópia do arquivo em local separado.
-O banco do Colab e os antigos cadastros da lista em memória não são importados automaticamente.
-Projeto para estudo local.
+São **16 testes** cobrindo CRUD, validações, persistência, IDs estáveis, migração do banco, fotos, filtros, mensagens, login, CSRF, bloqueio de alterações sem autenticação e limite de tentativas. Os testes usam bancos e pastas temporários, sem alterar os cadastros reais.
 
-## Referências
-- [Prática SQLite recente](https://docs.google.com/document/d/1whpyJ6jMmX54Z_cLLK9wUJytE85e5o4FtJR6XsD2dw0/edit)
-- [Resumo Flask](https://docs.google.com/document/d/1J6_kcEnOr8cgVy6HMpSIIyyL76fFtWugvgvBUirro6I/edit)
-- [Python sqlite3](https://docs.python.org/3/library/sqlite3.html)
-- [Banco no Flask](https://flask.palletsprojects.com/en/stable/tutorial/database/)
+## Estrutura
+
+```text
+sistema-adocao-python/
+├── app.py                     # Rotas, formulários e fotos
+├── acesso.py                  # Login e proteção da versão pública
+├── banco.py                   # Conexão, migração e operações SQLite
+├── wsgi.py                    # Entrada de produção
+├── configurar_publicacao.py   # Configuração administrativa no servidor
+├── sistema_adocao.py           # Versão original de terminal
+├── templates/                 # Páginas Jinja
+├── static/                    # Estilos e imagens de apresentação
+├── tests/                     # Testes automatizados
+├── docs/screenshots/          # Capturas para o portfólio
+├── requirements.txt
+└── PUBLICAR.md                # Guia de hospedagem
+```
+
+Durante o uso, `adocao.db` armazena os cadastros, `uploads/animais/` armazena suas fotos e `instance/` guarda a configuração privada da hospedagem. Esses arquivos ficam fora do Git.
+
+## Como funciona
+
+Um formulário envia os dados ao Flask; o servidor valida os campos e executa as operações SQL com parâmetros. Depois, redireciona para a listagem e apresenta o resultado com Jinja e mensagens de feedback.
+
+Os IDs permanecem estáveis após exclusões, nomes podem se repetir e editar um animal preserva seu status de adoção. As fotos recebem nomes únicos e são convertidas para JPEG; uma nova foto substitui a anterior.
+
+## Publicação e manutenção
+
+O site está disponível em **https://felipegab11.pythonanywhere.com/**. A senha administrativa é configurada diretamente no servidor e não está no repositório. Veja [PUBLICAR.md](PUBLICAR.md) para configurar uma nova instalação.
+
+O plano gratuito do PythonAnywhere exige extensão mensal no painel e possui limite de armazenamento. Faça backup de `adocao.db` e `uploads/animais/` juntos; o GitHub guarda o código, não os cadastros. Dados criados localmente e na hospedagem são independentes.
+
+## Aprendizados
+
+Este segundo projeto de estudos reuniu lógica Python, rotas HTTP, templates, formulários, validação, SQL, arquivos, autenticação, testes e publicação. O histórico das etapas está em [ETAPAS.md](ETAPAS.md).
+
+O escopo da **v1.0** está concluído: um sistema de adoção funcional, documentado e publicado, com a versão original de terminal preservada.

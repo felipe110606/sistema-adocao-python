@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administração · Sistema de Adoção</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main style="max-width: 480px; margin: 64px auto; padding: 0 16px;">
+    <section class="cadastro">
+        <span class="secao-subtitulo">Área administrativa</span>
+        <h1>Gerenciar os animais</h1>
+        <p>Entre para cadastrar animais e atualizar as informações.</p>
+        {% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
+        <form method="POST" action="{{ url_for('entrar', destino='cadastro' if request.args.get('destino') == 'cadastro' else None) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="campo">
+                <label for="senha">Senha de administração</label>
+                <input type="password" id="senha" name="senha" autocomplete="current-password" maxlength="256" required>
+            </div>
+            <button type="submit" class="botao-cadastrar">Entrar</button>
+        </form>
+        <p><a href="{{ url_for('inicio') }}">Voltar para os animais</a></p>
+    </section>
+</main>
+</body>
+</html>
